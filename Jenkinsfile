@@ -50,6 +50,9 @@ pipeline {
                         // Copy semua file dari folder 'build' ke '/react' di server
                         sshPut remote: remote, from: 'build/', into: '/react'
 
+                        // Copy file 'package.json' ke '/react' di server
+                        sshPut remote: remote, from: 'package.json', into: '/react'
+
                         // Copy file 'jenkins/scripts/deliver.sh' ke '/react' di server
                         sshPut remote: remote, from: 'jenkins/scripts/deliver.sh', into: '/react'
 
