@@ -1,3 +1,11 @@
+def remote = [
+    name: 'Server'
+    host: '172.16.138.59'
+    user: 'root'
+    identityfile: 'L0calp@ssword'
+    allowAnyHosts: true
+]
+
 pipeline {
     agent {
         docker {
@@ -10,6 +18,10 @@ pipeline {
             steps {
                 sh 'npm install'
                 sh 'npm run build'
+                def zipFileName = 'react.zip'
+
+                // Eksekusi perintah zip untuk mengompres semua file dan folder di workspace
+                sh "zip -r ${zipFileName} *"
                 
             }
         }
@@ -26,12 +38,7 @@ pipeline {
                 retry(3){
                     script{
                         
-                        def remote = [:]
-                        remote.name = 'Server'
-                        remote.host = '172.16.138.59'
-                        remote.user = 'root'
-                        remote.password = 'L0calp@ssword'
-                        remote.allowAnyHosts = true
+                        
 
                        // Check apakah /react ada
                         def folderExists = sshCommand remote: remote, command: 'test -e /react && echo "true" || echo "false"'
@@ -45,31 +52,29 @@ pipeline {
                         }
 
 
-
-
-                        // Copy semua file dari folder 'build' ke '/react' di server
-                        sshPut remote: remote, from: 'build/', into: '/react'
+                       
 
                         // Copy file 'package.json' ke '/react' di server
-                        sshPut remote: remote, from: 'package.json', into: '/react'
+                        sshPut remote: remote, from: 'react.zip', into: '/react'
 
-                        // Copy file 'jenkins/scripts/deliver.sh' ke '/react' di server
-                        sshPut remote: remote, from: 'jenkins/scripts/deliver.sh', into: '/react'
-
-                        // Copy file 'jenkins/scripts/deliver.sh' ke '/react' di server
-                        sshPut remote: remote, from: 'jenkins/scripts/kill.sh', into: '/react'
+                       
 
                         // Eksekusi deliver.sh
                         sshCommand remote: remote,
-                                    command: 'cd /react && chmod +x deliver.sh && ./deliver.sh',
+                                    command: 'sh "unzip react.zip"',
+                                    failonerror: true
+
+                        // Eksekusi deliver.sh
+                        sshCommand remote: remote,
+                                    command: 'cd /react && chmod +x jenkins/scripts/deliver.sh && ./jenkins/scripts/deliver.sh',
                                     failonerror: true
 
                         // Menunggu input dari pengguna sebelum melanjutkan
                         input message: 'Finished using the website? (Click "Proceed" to continue)'
 
-                        // Eksekusi kill.sh setelah mendapat input dari pengguna
+                        // Eksekusi jenkins/scripts/kill.sh setelah mendapat input dari pengguna
                         sshCommand remote: remote,
-                                    command: 'cd /react && chmod +x kill.sh && ./kill.sh',
+                                    command: 'cd /react && chmod +x jenkins/scripts/kill.sh && ./jenkins/scripts/kill.sh',
                                     failonerror: true
                     }
 
