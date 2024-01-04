@@ -33,10 +33,17 @@ pipeline {
                         remote.password = 'L0calp@ssword'
                         remote.allowAnyHosts = true
 
-                        // Create directory
-                        sshCommand remote: remote, command: """
-                            mkdir -p /react
-                        """ 
+                       // Check apakah /react ada
+                        def folderExists = sshCommand remote: remote, command: 'test -e /react && echo "true" || echo "false"'
+
+                        if (folderExists.trim() == 'true') {
+                            // If /react ada, Hapus file dan folder didalamnya
+                            sshCommand remote: remote, command: 'find /react -mindepth 1 -delete'
+                        } else {
+                            // If /react tidak ada, Buatin
+                            sshCommand remote: remote, command: 'mkdir -p /react'
+                        }
+
 
 
 
