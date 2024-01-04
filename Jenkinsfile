@@ -18,10 +18,37 @@ pipeline {
         }
         stage('Deploy') { 
             steps {
-                sh './jenkins/scripts/vercel.sh' 
-                sh './jenkins/scripts/deliver.sh' 
-                input message: 'Sudah selesai menggunakan React App? (Klik "Proceed" untuk mengakhiri)' 
-                sh './jenkins/scripts/kill.sh' 
+                retry(3){
+                    def remote = [:]
+                    remote.name = 'Server'
+                    remote.host = '172.16.138.59'
+                    remote.user = 'root'
+                    remote.password = 'L0calp@ssword'
+                    remote.allowAnyHosts = true
+
+                    // Copy semua file dari folder 'build' ke '/react' di server
+                    sshPut remote: remote, from: 'build/**', into: '/react/'
+
+                    // Copy file 'jenkins/scripts/deliver.sh' ke '/react' di server
+                    sshPut remote: remote, from: 'jenkins/scripts/deliver.sh', into: '/react/'
+
+                    // Copy file 'jenkins/scripts/deliver.sh' ke '/react' di server
+                    sshPut remote: remote, from: 'jenkins/scripts/kill.sh', into: '/react/'
+
+                    // Eksekusi deliver.sh
+                    sshCommand remote: remote,
+                                command: 'cd /react && chmod +x deliver.sh && ./deliver.sh',
+                                failonerror: true
+
+                    // Menunggu input dari pengguna sebelum melanjutkan
+                    input message: 'Finished using the website? (Click "Proceed" to continue)'
+
+                    // Eksekusi kill.sh setelah mendapat input dari pengguna
+                    sshCommand remote: remote,
+                                command: 'cd /react && chmod +x kill.sh && ./kill.sh',
+                                failonerror: true
+
+                }
             }
         }
         
