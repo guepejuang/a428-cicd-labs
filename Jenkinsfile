@@ -10,6 +10,7 @@ pipeline {
             steps {
                 sh 'npm install'
                 sh 'npm run build'
+                
             }
         }
         stage('Test') { 
@@ -21,6 +22,7 @@ pipeline {
             steps {
                 retry(3){
                     script{
+                        sh 'ls -la'
                         def remote = [:]
                         remote.name = 'Server'
                         remote.host = '172.16.138.59'
