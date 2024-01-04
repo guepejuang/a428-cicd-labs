@@ -10,10 +10,9 @@ pipeline {
             steps {
                 sh 'npm install'
                 sh 'npm run build'
-                def zipFileName = 'react.zip'
 
                 // Eksekusi perintah zip untuk mengompres semua file dan folder di workspace
-                sh "zip -r ${zipFileName} *"
+                sh "zip -r react.zip *"
                 
             }
         }
