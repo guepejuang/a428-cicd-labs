@@ -1,11 +1,3 @@
-def remote = [
-    name: 'Server'
-    host: '172.16.138.59'
-    user: 'root'
-    identityfile: 'L0calp@ssword'
-    allowAnyHosts: true
-]
-
 pipeline {
     agent {
         docker {
@@ -37,7 +29,12 @@ pipeline {
             steps {
                 retry(3){
                     script{
-                        
+                        def remote = [:]
+                        remote.name = 'Server'
+                        remote.host = '172.16.138.59'
+                        remote.user = 'root'
+                        remote.password = 'L0calp@ssword'
+                        remote.allowAnyHosts = true
                         
 
                        // Check apakah /react ada
