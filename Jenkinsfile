@@ -16,13 +16,16 @@ pipeline {
         stage('Test') { 
             steps {
                 sh './jenkins/scripts/test.sh' 
+                echo "Workspace Contents:"
+                sh 'ls -R'
+
             }
         }
         stage('Deploy') { 
             steps {
                 retry(3){
                     script{
-                        sh 'ls -la'
+                        
                         def remote = [:]
                         remote.name = 'Server'
                         remote.host = '172.16.138.59'
@@ -31,7 +34,7 @@ pipeline {
                         remote.allowAnyHosts = true
 
                         // Copy semua file dari folder 'build' ke '/react' di server
-                        sshPut remote: remote, from: 'build/**', into: '/react/'
+                        sshPut remote: remote, from: 'build/', into: '/react/'
 
                         // Copy file 'jenkins/scripts/deliver.sh' ke '/react' di server
                         sshPut remote: remote, from: 'jenkins/scripts/deliver.sh', into: '/react/'
