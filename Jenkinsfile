@@ -33,14 +33,21 @@ pipeline {
                         remote.password = 'L0calp@ssword'
                         remote.allowAnyHosts = true
 
+                        // Create directory
+                        sshCommand remote: remote, command: """
+                            mkdir -p /react
+                        """ 
+
+
+
                         // Copy semua file dari folder 'build' ke '/react' di server
-                        sshPut remote: remote, from: 'build/', into: '/react/'
+                        sshPut remote: remote, from: 'build/', into: '/react'
 
                         // Copy file 'jenkins/scripts/deliver.sh' ke '/react' di server
-                        sshPut remote: remote, from: 'jenkins/scripts/deliver.sh', into: '/react/'
+                        sshPut remote: remote, from: 'jenkins/scripts/deliver.sh', into: '/react'
 
                         // Copy file 'jenkins/scripts/deliver.sh' ke '/react' di server
-                        sshPut remote: remote, from: 'jenkins/scripts/kill.sh', into: '/react/'
+                        sshPut remote: remote, from: 'jenkins/scripts/kill.sh', into: '/react'
 
                         // Eksekusi deliver.sh
                         sshCommand remote: remote,
