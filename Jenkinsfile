@@ -36,7 +36,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker image 
-                    sh 'docker build -t a428-cicd-labs .'
+                    sh 'docker build -t kosih/a428-cicd-labs .'
                 }
             }
         }
@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     // Push Docker image to Docker Hub
-                    sh 'docker push a428-cicd-labs'
+                    sh 'docker push kosih/a428-cicd-labs'
                 }
             }
         }
@@ -74,9 +74,9 @@ pipeline {
 
                     // ... (sama seperti sebelumnya)
 
-                    // Pull Docker image and run on SSH server (replace 'a428-cicd-labs' with your actual image name)
+                    // Pull Docker image and run on SSH server 
                     sshCommand remote: remote,
-                                command: 'docker pull a428-cicd-labs && docker run -d -p 3400:3400 a428-cicd-labs',
+                                command: 'docker pull kosih/a428-cicd-labs && docker run -d -p 3400:3400 kosih/a428-cicd-labs',
                                 failonerror: true
                 }
             }
