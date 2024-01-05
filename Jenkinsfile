@@ -76,6 +76,11 @@ pipeline {
                     sshCommand remote: remote,
                                 command: 'docker stop react-cicd || true',
                                 failonerror: false
+                                
+                    // Menghapus container dengan nama react-cicd
+                    sshCommand remote: remote,
+                                command: 'docker rm react-cicd || true',
+                                failonerror: false
 
                     // Menghapus image kosih/a428-cicd-labs
                     sshCommand remote: remote,
