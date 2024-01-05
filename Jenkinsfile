@@ -5,6 +5,14 @@ pipeline {
         nodejs 'Node_16'
     }
     stages {
+        stage('Install Zip') {
+            steps {
+                script {
+                    // Install paket zip
+                    sh 'apt-get update && apt-get install -y zip'
+                }
+            }
+        }
         stage('Build') {
             steps {
                 sh 'npm install'
