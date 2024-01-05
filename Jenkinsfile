@@ -72,11 +72,19 @@ pipeline {
                     remote.password = 'L0calp@ssword'
                     remote.allowAnyHosts = true
 
-                    // ... (sama seperti sebelumnya)
-
-                    // Pull Docker image and run on SSH server 
+                    // Menghentikan container dengan nama react-cicd
                     sshCommand remote: remote,
-                                command: 'docker pull kosih/a428-cicd-labs && docker run -d -p 3400:3400 kosih/a428-cicd-labs',
+                                command: 'docker stop react-cicd || true',
+                                failonerror: false
+
+                    // Menghapus image kosih/a428-cicd-labs
+                    sshCommand remote: remote,
+                                command: 'docker rmi kosih/a428-cicd-labs || true',
+                                failonerror: false
+
+                    // Pull Docker image dan jalankan docker
+                    sshCommand remote: remote,
+                                command: 'docker pull kosih/a428-cicd-labs && docker run -d -p 3400:3000 --name react-cicd kosih/a428-cicd-labs',
                                 failonerror: true
                 }
             }
