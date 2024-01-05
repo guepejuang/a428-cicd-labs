@@ -1,19 +1,10 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:16-alpine'
-            args '-p 3004:3004'
-        }
+    agent any
+
+    tools {
+        nodejs 'Node_16'
     }
     stages {
-        stage('Install Zip') {
-            steps {
-                script {
-                    // Install paket zip
-                    sh 'su root -c "apk add --no-cache zip"'
-                }
-            }
-        }
         stage('Build') {
             steps {
                 sh 'npm install'
@@ -21,14 +12,11 @@ pipeline {
 
                 // Eksekusi perintah zip untuk mengompres semua file dan folder di workspace
                 sh "zip -r react.zip *"
-                
             }
         }
         stage('Test') { 
             steps {
                 sh './jenkins/scripts/test.sh' 
-                echo "Workspace Contents:"
-                sh 'ls -R'
 
             }
         }
