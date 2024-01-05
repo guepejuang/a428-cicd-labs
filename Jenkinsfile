@@ -9,7 +9,7 @@ pipeline {
             steps {
                 script {
                     // Install paket zip
-                    sh 'apt-get update && apt-get install -y zip'
+                    sh 'sudo apt-get update && apt-get install -y zip'
                 }
             }
         }
