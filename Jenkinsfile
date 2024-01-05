@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     // Install paket zip
-                    sh 'apk add --no-cache zip'
+                    sh 'sudo apk add --no-cache zip'
                 }
             }
         }
