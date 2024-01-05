@@ -5,6 +5,19 @@ pipeline {
         nodejs 'Node_16'
     }
     stages {
+        
+        stage('Build') {
+            steps {
+                sh 'npm install'
+                sh 'npm run build'
+            }
+        }
+        stage('Test') { 
+            steps {
+                sh './jenkins/scripts/test.sh' 
+
+            }
+        }
         stage('Login to Docker') {
             steps {
                 script {
@@ -18,18 +31,6 @@ pipeline {
                     // Eksekusi perintah docker login
                     sh "echo ${dockerPassword} | docker login --username ${dockerUsername} --password-stdin ${dockerRegistry}"
                 }
-            }
-        }
-        stage('Build') {
-            steps {
-                sh 'npm install'
-                sh 'npm run build'
-            }
-        }
-        stage('Test') { 
-            steps {
-                sh './jenkins/scripts/test.sh' 
-
             }
         }
         stage('Build Docker') {
@@ -56,15 +57,13 @@ pipeline {
                 }
             }
         }
-        stage('Sleep') {
-            steps {
-                // Menunggu 1 menit
-                sleep time: 1, unit: 'MINUTES'
-            }
-        }
         stage('Deploy') {
             steps {
                 script {
+                    // Menunggu 1 menit
+                    sleep time: 1, unit: 'MINUTES'
+
+
                     def remote = [:]
                     remote.name = 'Server'
                     remote.host = '172.16.138.59'
@@ -76,7 +75,7 @@ pipeline {
                     sshCommand remote: remote,
                                 command: 'docker stop react-cicd || true',
                                 failonerror: false
-                                
+
                     // Menghapus container dengan nama react-cicd
                     sshCommand remote: remote,
                                 command: 'docker rm react-cicd || true',
