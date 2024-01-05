@@ -5,11 +5,18 @@ pipeline {
         nodejs 'Node_16'
     }
     stages {
-        stage('Install Zip') {
+        stage('Login to Docker') {
             steps {
                 script {
-                    // Install paket zip
-                    sh 'sudo apt-get update && apt-get install -y zip'
+                    // Nama registry Docker
+                    def dockerRegistry = 'docker.io'
+                    // Nama pengguna Docker
+                    def dockerUsername = 'kosih'
+                    // Kata sandi Docker
+                    def dockerPassword = 'dckr_pat_9pw4LY1LZYDpmBF-aofoblU8QCQ'
+
+                    // Eksekusi perintah docker login
+                    sh "echo ${dockerPassword} | docker login --username ${dockerUsername} --password-stdin ${dockerRegistry}"
                 }
             }
         }
@@ -18,8 +25,6 @@ pipeline {
                 sh 'npm install'
                 sh 'npm run build'
 
-                // Eksekusi perintah zip untuk mengompres semua file dan folder di workspace
-                sh "zip -r react.zip *"
             }
         }
         stage('Test') { 
